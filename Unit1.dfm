@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 0
   BorderStyle = bsSingle
   Caption = 'Weight registrator'
-  ClientHeight = 370
-  ClientWidth = 446
+  ClientHeight = 400
+  ClientWidth = 440
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -41,7 +41,7 @@ object Form1: TForm1
     OnClick = read_data_buttonClick
   end
   object Connect_button: TButton
-    Left = 40
+    Left = 41
     Top = 84
     Width = 361
     Height = 54
@@ -182,10 +182,10 @@ object Form1: TForm1
     TabOrder = 10
   end
   object drop_cycle_button: TButton
-    Left = 840
-    Top = 457
-    Width = 147
-    Height = 25
+    Left = 25
+    Top = 362
+    Width = 392
+    Height = 19
     Caption = #1057#1073#1088#1086#1089' '#1094#1080#1082#1083#1072' '#1087#1086#1076#1082#1083#1102#1095#1077#1085#1080#1103
     TabOrder = 11
     OnClick = drop_cycle_buttonClick
@@ -200,7 +200,7 @@ object Form1: TForm1
     OnClick = reset_time_buttonClick
   end
   object connect_indicator: TPanel
-    Left = 396
+    Left = 400
     Top = 84
     Width = 17
     Height = 54
@@ -249,12 +249,6 @@ object Form1: TForm1
     Interval = 3000
     OnTimer = timer_smenaTimer
     Left = 161
-    Top = 497
-  end
-  object timer_date: TTimer
-    Interval = 3000
-    OnTimer = timer_dateTimer
-    Left = 57
     Top = 497
   end
   object timer_table: TTimer
