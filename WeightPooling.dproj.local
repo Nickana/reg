@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.284,F:\Project1.dproj=D:\Projects\Projects with GIT\Weight_pooling_registrator\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.516,F:\Unit1.dfm=D:\Projects\Projects with GIT\Weight_pooling_registrator\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.112,=C:\Users\Кирилл\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.111,C:\Users\Кирилл\Documents\Embarcadero\Studio\Projects\Unit1.pas=D:\Projects\Projects with GIT\Weight_pooling_registrator\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.938,D:\Projects\Projects with GIT\WeightRegistrator\reg\Project1.dproj=D:\Projects\Projects with GIT\WeightRegistrator\reg\WeightPooling.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.700,C:\Users\Nikana\Desktop\Registrator_weight\Project1.dproj=F:\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.516,F:\Unit1.pas=D:\Projects\Projects with GIT\Weight_pooling_registrator\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.177,C:\Users\Кирилл\Documents\Embarcadero\Studio\Projects\Project1.dproj=D:\Projects\Projects with GIT\Weight_pooling_registrator\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.111,C:\Users\Кирилл\Documents\Embarcadero\Studio\Projects\Unit1.dfm=D:\Projects\Projects with GIT\Weight_pooling_registrator\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.471,F:\Project1.dproj=D:\Projects\Weight_pooling_registrator\Project1.dproj</Transaction>
+  </Transactions>
+</BorlandProject>

@@ -25,8 +25,12 @@ type
     timer_smena: TTimer;
     timer_date: TTimer;
     timer_table: TTimer;
-    Button1: TButton;
-    Button2: TButton;
+    reset_time_button: TButton;
+    drop_cycle_button: TButton;
+    disconect_button: TButton;
+    timer_connect_timeout: TTimer;
+    Panel2: TPanel;
+    text_label: TLabel;
     procedure read_data_buttonClick(Sender: TObject);
     procedure Connect_buttonClick(Sender: TObject);
     procedure ComDataPacket1Packet(Sender: TObject; const Str: string);
@@ -38,8 +42,13 @@ type
     procedure timer_dateTimer(Sender: TObject);
     procedure timer_tableTimer(Sender: TObject);
     procedure resetTime_buttonClick(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure drop_cycle_buttonClick(Sender: TObject);
+    procedure reset_time_buttonClick(Sender: TObject);
+    procedure close_connection_buttonClick(Sender: TObject);
+    procedure disconect_buttonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure timer_connect_timeoutTimer(Sender: TObject);
+
   private
     { Private declarations }
   public
@@ -121,30 +130,45 @@ begin
   ComPort.WriteStr(date);
   //Memo1.Lines.Add(date);
 
+  timer_connect_timeout.Enabled := false;
+  text_label.Font.Size := 14;
+  text_label.Caption := 'Устанавливается дата и время с пк...';
+
+end;
+
+procedure TForm1.timer_connect_timeoutTimer(Sender: TObject);
+begin
+    text_label.Font.Size := 20;
+    text_label.Caption := 'НЕТ ОТВЕТА ОТ ВЕСОВ';
+    text_label.Font.Color := clRed;
 end;
 
 procedure TForm1.timer_dateTimer(Sender: TObject);
 begin
+
+  text_label.Caption := '';
   timer_date.Enabled := false;
-  set_date_button.Caption := 'Задать дату и время с ПК';
-  set_date_button.Font.Color := clBlack;
 end;
 
 procedure TForm1.timer_smenaTimer(Sender: TObject);
 begin
+  text_label.Caption := '';
+  timer_connect_timeout.Enabled := true;
   timer_smena.Enabled := false;
-  ClearMemory_button.Caption := 'Завершить смену';
-  ClearMemory_button.Font.Color := clBlack;
 end;
 
 procedure TForm1.timer_tableTimer(Sender: TObject);
 begin
+  if text_label.Caption = 'Comport ОТКЛЮЧЕН' then
+    begin
+      text_label.Caption := '';
+    end;
+
   timer_table.Enabled := false;
-  XML_button.Caption := 'Cгенерировать таблицу весов';
-  XML_button.Font.Color := clBlack;
+  text_label.Caption := '';
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);// сброс времени даты в 0
+procedure TForm1.reset_time_buttonClick(Sender: TObject);// сброс времени даты в 0
 Var
 today : TDateTime;
 date : string;
@@ -163,26 +187,68 @@ begin
 
 end;
 
-procedure TForm1.Button2Click(Sender: TObject); //дебажная команда для выхода из цикла соединения без очистки памяти
+procedure TForm1.disconect_buttonClick(Sender: TObject);
+begin
+  ComPort.Close;
+  Memo1.Lines.Add('Ком порт отключен');
+  read_data_button.Enabled := false;
+  XML_button.Enabled := false;
+  set_date_button.Enabled :=false;
+  ClearMemory_button.Enabled :=false;
+  disconect_button.Enabled := false;
+
+  timer_connect_timeout.Enabled := false;
+  text_label.Caption := 'Comport ОТКЛЮЧЕН';
+  text_label.Font.Color := clRed;
+  timer_table.Enabled := true;
+
+
+end;
+
+procedure TForm1.drop_cycle_buttonClick(Sender: TObject); //дебажная команда для выхода из цикла соединения без очистки памяти
 var
 Value : integer;
 begin
   Value := 5;
   ComPort.Write(Value,1);
+end;
 
+procedure TForm1.FormCreate(Sender: TObject);//создание формы
+begin
+  read_data_button.Enabled := false;
+  XML_button.Enabled := false;
+  set_date_button.Enabled :=false;
+  ClearMemory_button.Enabled :=false;
+  read_progress_bar.Enabled :=false;
+  disconect_button.Enabled := false;
+
+end;
+
+procedure TForm1.close_connection_buttonClick(Sender: TObject);
+begin
+ ComPort.Close;
+ Memo1.Lines.add('соединение принудительно разорвано приложением');
 end;
 
 procedure TForm1.ClearMemory_buttonClick(Sender: TObject);
 var
 clearValue : integer;
 begin
-
+  timer_connect_timeout.Enabled := false;
   clearValue := 2;
   ComPort.Write(clearValue,1);
   connect_indicator.Color := clRed;
   connect_indicator_2.Color := clRed;
 
+  text_label.Font.Color := clGreen;
+  text_label.Font.Size := 11;
+  text_label.Caption := 'СМЕНА ЗАВЕРШЕНА, выполните отключение...';
+  timer_smena.Enabled := true;
+  disconect_button.Enabled := true;
+
 end;
+
+
 
 procedure TForm1.ComDataPacket1Packet(Sender: TObject; const Str: string);
 var
@@ -191,7 +257,7 @@ cutNum : Integer;
 subStrings: TArray<string>;
 J: Integer;
 
-hilowInt :Integer;
+hilowInt :SmallInt;
 
 proc, z:  integer;//переменная для заполнения прогресс бара
 
@@ -221,7 +287,7 @@ begin
              hilowInt:= (byteArray[0] shl 8) or byteArray[1];//совмещаем старший и младший байт
 
              SetLength(subStrings,7);//сокращаем массив на 1 элемент
-                                                                       //ОСТАНОВИЛСЯ ТУТ, СДЕЛАТЬ АДЕКВАТНОЕ СОЕДИНЕНИЕ
+//ОСТАНОВИЛСЯ ТУТ, СДЕЛАТЬ АДЕКВАТНОЕ СОЕДИНЕНИЕ----------------------------------------------------
              subStrings[6] := IntToStr(hilowInt);
 
              recievedValue := '';
@@ -243,6 +309,7 @@ begin
                  XML_button.Enabled := false;
                  set_date_button.Enabled :=false;
                  ClearMemory_button.Enabled :=false;
+                 disconect_button.Enabled := false;
                end
                else
                begin
@@ -251,6 +318,7 @@ begin
                  XML_button.Enabled := true;
                  set_date_button.Enabled :=true;
                  ClearMemory_button.Enabled :=true;
+                 disconect_button.Enabled := true;
                  read_progress_bar.Position := 0;
                end
           end;
@@ -259,17 +327,37 @@ begin
             Memo1.Lines.add(Str);
             connect_indicator.Color := clGreen;
             connect_indicator_2.Color := clGreen;
+
+            Connect_button.Enabled := true;
+            read_data_button.Enabled := true;
+            XML_button.Enabled := true;
+            set_date_button.Enabled :=true;
+            ClearMemory_button.Enabled :=true;
+
+            timer_connect_timeout.Enabled := false; //обновляем таймер
+            timer_connect_timeout.Enabled := true;
+;
+            if (text_label.Caption = 'НЕТ ОТВЕТА ОТ ВЕСОВ') or (text_label.Caption  = '') then
+              begin
+                text_label.Font.Size := 20;
+                text_label.Font.Color := clGreen;
+                text_label.Caption := 'ВЕСЫ ПОДКЛЮЧЕНЫ';
+              end;
           end;
 
     '&' : begin
+            timer_connect_timeout.Enabled:= false;
             Memo1.Lines.Add(Str + ' Время установлено');
+            text_label.Font.Color := clGreen;
+            text_label.Font.Size := 14;
+            timer_date.Enabled := true;
+            text_label.Caption := 'Дата и время с пк установлены';
           end;
 
     '!' : begin
             Memo1.Lines.Add(Str + ' Завершение подключения С очисткой памяти выполнено');
             connect_indicator.Color := clRed;
             connect_indicator_2.Color := clRed;
-            ComPort.Close;
           end;
 
     '#' : begin
@@ -278,25 +366,6 @@ begin
             connect_indicator_2.Color := clRed;
           end
     end;
-
-// proc:= ((I*100) div Length(Data));
-// read_progress_bar.Position :=proc;
-// if proc < 100 then
-//   begin
-//     Connect_button.Enabled := false;
-//     read_data_button.Enabled := false;
-//     XML_button.Enabled := false;
-//     set_date_button.Enabled :=false;
-//     ClearMemory_button.Enabled :=false;
-//   end
-//   else
-//   begin
-//     Connect_button.Enabled := true;
-//     read_data_button.Enabled := true;
-//     XML_button.Enabled := true;
-//     set_date_button.Enabled :=true;
-//     ClearMemory_button.Enabled :=true;
-//   end
 end;
 
 
@@ -389,6 +458,8 @@ var
   Doc: IXMLDocument;
   RootNode, CatalogNode, DateNode,TimeNode,WeightNode :IXMLNode;
 
+  commaString : string; //переменная которая вставляет запятную в значение веса,перед разрядом едениц
+  temp_symbol : string;
   I: Integer;
 Begin
   Doc:=NewXMLDocument();
@@ -405,15 +476,36 @@ Begin
 
        DateNode.Text := Format('%d-%d-%d',[Data[I,3],Data[I,4],Data[I,5]]);
        TimeNode.Text := Format('%d:%d:%d',[Data[I,0],Data[I,1],Data[I,2]]);
-       WeightNode.Text := IntToStr(Integer(Data[I,6]));
+
+       commaString := IntToStr(Integer(Data[I,6]));
+
+       if Length(commaString) = 1 then
+         begin
+           commaString := '0,' + IntToStr(Integer(Data[I,6]));
+         end
+       else
+        begin
+         temp_symbol := ',';
+         temp_symbol := temp_symbol + commaString[Length(commaString)];
+
+         delete(commaString, length(commaString),1);
+
+         commaString := commaString + temp_symbol;
+
+
+         Memo1.Lines.Add(commaString);
+
+        end;
+        WeightNode.Text := commaString;
     End;
 
   Doc.SaveToFile('data.xml');
 
   timer_table.Enabled := true;
-  XML_button.Caption := 'таблица сохранена в корневом каталоге';
-  XML_button.Font.Color := clGreen;
 
+  text_label.Caption := 'таблица сохранена в корневом каталоге';
+  text_label.Font.Color := clGreen;
+  text_label.Font.Size := 12;
 End;
 
 procedure TForm1.Connect_buttonClick(Sender: TObject);
@@ -425,11 +517,11 @@ begin
   ComPort.ShowSetupDialog();
   ComPort.Open();
   ComPort.Write(command,1);
-  if not ComPort.Connected then
+  if ComPort.Connected then
   begin
-    connect_indicator.Color := clRed;
-    connect_indicator_2.Color := clRed;
+    timer_connect_timeout.Enabled := true;
   end
+
 end;
 
 end.
